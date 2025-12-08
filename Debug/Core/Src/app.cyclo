@@ -1,5 +1,5 @@
-../Core/Src/app.c:19:6:init_device	1
-../Core/Src/app.c:46:9:shell_uart2_transmit	1
-../Core/Src/app.c:52:9:shell_uart2_receive	1
-../Core/Src/app.c:58:6:HAL_UART_RxCpltCallback	2
-../Core/Src/app.c:66:6:loop	1
+../Core/Src/app.c:22:6:init_device	1
+../Core/Src/app.c:49:9:shell_uart2_transmit	1
+../Core/Src/app.c:55:9:shell_uart2_receive	1
+../Core/Src/app.c:61:6:HAL_UART_RxCpltCallback	2
+../Core/Src/app.c:69:6:loop	1

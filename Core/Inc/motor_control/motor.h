@@ -4,53 +4,52 @@
  *  Created on: Nov 11, 2025
  *      Author: nicolas
  */
-#ifndef MOTOR_DRIVER_H_
-#define MOTOR_DRIVER_H_
+
+#ifndef INC_MOTOR_CONTROL_MOTOR_H_
+#define INC_MOTOR_CONTROL_MOTOR_H_
 
 #include "stm32g4xx_hal.h"
 #include "tim.h"
 #include "user_interface/shell.h"
 
-// ---- Hardware Configuration ----
-#define MOTOR_PWM_TIMER        (&htim1)
-#define MOTOR_CH_U            TIM_CHANNEL_1
-#define MOTOR_CH_V            TIM_CHANNEL_2
+#define MOTOR_TIM_HANDLE &htim1
+#define MOTOR_TIM_CHANNEL_U TIM_CHANNEL_1
+#define MOTOR_TIM_CHANNEL_V TIM_CHANNEL_2
 
-// ---- PWM Range ----
-#define PWM_RANGE_MAX         8500   // Timer ARR+1 (period = 8499)
-#define PWM_RANGE_MIN         0
+#define PWM_MAX_VAL 8500 // ARR + 1 (Period 8499)
+#define PWM_MIN_VAL 0
 
-// ---- Ramp Behavior ----
-#define RAMP_INCREMENT_STEP   50     // Speed adjustment per ramp cycle
-#define RAMP_INTERVAL_MS      10     // Call frequency for ramp update
+// Ramp parameters
+#define RAMP_STEP_INCREMENT 50       // How much to change current_speed_pwm each ramp update
+#define RAMP_UPDATE_PERIOD_MS 10     // How often to update the ramp (in ms)
 
 /**
- * @brief  Prepare the motor system: initial PWM state and CLI bindings.
+ * @brief Initializes the motor control module (PWM start, shell commands).
  */
 void motor_init(void);
 
 /**
- * @brief  Update the target PWM duty cycle.
- * @param  value  Desired duty cycle, automatically clamped to valid boundaries.
- *
- * Note: Middle value (PWM_RANGE_MAX/2) corresponds to idle/stop condition.
+ * @brief Sets the PWM duty cycle for the motor.
+ * @param value Duty cycle value (0 to PWM_MAX_VAL).
+ *              Typically, PWM_MAX_VAL/2 = Speed 0.
+ *              This function now sets the target speed for the ramp.
  */
 void motor_set_PWM(int value);
 
 /**
- * @brief  Enable PWM output on both motor phases (U & V).
+ * @brief Starts the PWM generation on U and V channels.
  */
 void motor_start_pwm(void);
 
 /**
- * @brief  Disable PWM output on both motor phases.
+ * @brief Stops the PWM generation on U and V channels.
  */
 void motor_stop_pwm(void);
 
 /**
- * @brief  Smoothly transition the active PWM value toward the target value.
- *         Should be executed periodically based on RAMP_INTERVAL_MS.
+ * @brief Task to update the motor speed progressively (ramp).
+ *        Should be called periodically (e.g., from a timer interrupt).
  */
 void motor_ramp_task(void);
 
-#endif /* MOTOR_DRIVER_H_ */
+#endif /* INC_MOTOR_CONTROL_MOTOR_H_ */

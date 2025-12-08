@@ -7,111 +7,114 @@
 
 #include "motor_control/motor.h"
 #include <stdlib.h>
+// Global variables for ramp control
+static int target_speed_pwm;
+static int current_speed_pwm;
 
-// Internal State
-static int pwm_target = 0;
-static int pwm_current = 0;
+// Private function prototypes for shell commands
+int cmd_motor_start(h_shell_t* h_shell, int argc, char** argv);
+int cmd_motor_stop(h_shell_t* h_shell, int argc, char** argv);
+int cmd_motor_speed(h_shell_t* h_shell, int argc, char** argv);
 
-// Forward Declarations
-static int shell_cmd_run(h_shell_t* shell, int argc, char** argv);
-static int shell_cmd_stop(h_shell_t* shell, int argc, char** argv);
-static int shell_cmd_set_speed(h_shell_t* shell, int argc, char** argv);
-
-//Initialization
 void motor_init(void)
 {
-	// Default state: mid-range duty cycle
-	pwm_current = PWM_MAX_VAL / 2;
-	pwm_target  = PWM_MAX_VAL / 2;
+    // Initialize to 50% duty cycle
+    current_speed_pwm = PWM_MAX_VAL / 2;
+    target_speed_pwm  = PWM_MAX_VAL / 2;
 
-	// Apply immediately
-	__HAL_TIM_SET_COMPARE(MOTOR_TIM_HANDLE, MOTOR_TIM_CHANNEL_U, pwm_current);
-	__HAL_TIM_SET_COMPARE(MOTOR_TIM_HANDLE, MOTOR_TIM_CHANNEL_V, pwm_current);
+    // Apply initial duty cycle: U = α, V = 1 − α
+    __HAL_TIM_SET_COMPARE(MOTOR_TIM_HANDLE, MOTOR_TIM_CHANNEL_U, current_speed_pwm);
+    __HAL_TIM_SET_COMPARE(MOTOR_TIM_HANDLE, MOTOR_TIM_CHANNEL_V, PWM_MAX_VAL - current_speed_pwm);
 
-	// Ensure output is disabled at startup
-	motor_stop_pwm();
+    // Ensure PWMs are stopped initially
+    motor_stop_pwm();
 
-	// Expose commands to shell
-	shell_add(&hshell1, "start", shell_cmd_run, "Activate motor output");
-	shell_add(&hshell1, "stop", shell_cmd_stop, "Deactivate motor output");
-	shell_add(&hshell1, "speed", shell_cmd_set_speed, "Set target speed: speed <number>");
+    // Register shell commands
+    shell_add(&hshell1, "start", cmd_motor_start, "Start Motor PWM generation");
+    shell_add(&hshell1, "stop", cmd_motor_stop, "Stop Motor PWM generation");
+    shell_add(&hshell1, "speed", cmd_motor_speed, "Set Motor speed");
 }
 
-//PWM Control Helpers
 void motor_start_pwm(void)
 {
-	HAL_TIM_PWM_Start(MOTOR_TIM_HANDLE, MOTOR_TIM_CHANNEL_U);
-	HAL_TIMEx_PWMN_Start(MOTOR_TIM_HANDLE, MOTOR_TIM_CHANNEL_U);
+    HAL_TIM_PWM_Start(MOTOR_TIM_HANDLE, MOTOR_TIM_CHANNEL_U);
+    HAL_TIMEx_PWMN_Start(MOTOR_TIM_HANDLE, MOTOR_TIM_CHANNEL_U);
 
-	HAL_TIM_PWM_Start(MOTOR_TIM_HANDLE, MOTOR_TIM_CHANNEL_V);
-	HAL_TIMEx_PWMN_Start(MOTOR_TIM_HANDLE, MOTOR_TIM_CHANNEL_V);
+    HAL_TIM_PWM_Start(MOTOR_TIM_HANDLE, MOTOR_TIM_CHANNEL_V);
+    HAL_TIMEx_PWMN_Start(MOTOR_TIM_HANDLE, MOTOR_TIM_CHANNEL_V);
 }
 
 void motor_stop_pwm(void)
 {
-	HAL_TIM_PWM_Stop(MOTOR_TIM_HANDLE, MOTOR_TIM_CHANNEL_U);
-	HAL_TIMEx_PWMN_Stop(MOTOR_TIM_HANDLE, MOTOR_TIM_CHANNEL_U);
+    HAL_TIM_PWM_Stop(MOTOR_TIM_HANDLE, MOTOR_TIM_CHANNEL_U);
+    HAL_TIMEx_PWMN_Stop(MOTOR_TIM_HANDLE, MOTOR_TIM_CHANNEL_U);
 
-	HAL_TIM_PWM_Stop(MOTOR_TIM_HANDLE, MOTOR_TIM_CHANNEL_V);
-	HAL_TIMEx_PWMN_Stop(MOTOR_TIM_HANDLE, MOTOR_TIM_CHANNEL_V);
+    HAL_TIM_PWM_Stop(MOTOR_TIM_HANDLE, MOTOR_TIM_CHANNEL_V);
+    HAL_TIMEx_PWMN_Stop(MOTOR_TIM_HANDLE, MOTOR_TIM_CHANNEL_V);
 }
 
-void motor_set_PWM(int requested_pwm)
+void motor_set_PWM(int percent)
 {
-	// Bound value within allowed PWM limits
-	if (requested_pwm < PWM_MIN_VAL) requested_pwm = PWM_MIN_VAL;
-	else if (requested_pwm > PWM_MAX_VAL) requested_pwm = PWM_MAX_VAL;
+    if (percent < 0) percent = 0;
+    if (percent > 100) percent = 100;
 
-	pwm_target = requested_pwm;
+    // Convert percent to PWM value
+    target_speed_pwm = (percent * PWM_MAX_VAL) / 100;
 }
 
 void motor_ramp_task(void)
 {
-	// Smooth transition toward target
-	if (pwm_current < pwm_target) {
-		pwm_current += RAMP_STEP_INCREMENT;
-		if (pwm_current > pwm_target) pwm_current = pwm_target;
-	}
-	else if (pwm_current > pwm_target) {
-		pwm_current -= RAMP_STEP_INCREMENT;
-		if (pwm_current < pwm_target) pwm_current = pwm_target;
-	}
+    // Smooth ramp toward target
+    if (current_speed_pwm < target_speed_pwm) {
+        current_speed_pwm += RAMP_STEP_INCREMENT;
+        if (current_speed_pwm > target_speed_pwm)
+            current_speed_pwm = target_speed_pwm;
+    }
+    else if (current_speed_pwm > target_speed_pwm) {
+        current_speed_pwm -= RAMP_STEP_INCREMENT;
+        if (current_speed_pwm < target_speed_pwm)
+            current_speed_pwm = target_speed_pwm;
+    }
 
-	// Update hardware register
-	__HAL_TIM_SET_COMPARE(MOTOR_TIM_HANDLE, MOTOR_TIM_CHANNEL_U, pwm_current);
-	__HAL_TIM_SET_COMPARE(MOTOR_TIM_HANDLE, MOTOR_TIM_CHANNEL_V, pwm_current);
+    // Apply updated PWM
+    __HAL_TIM_SET_COMPARE(MOTOR_TIM_HANDLE, MOTOR_TIM_CHANNEL_U, current_speed_pwm);
+
+    // Complementary: V = 1 − α
+    int comp_pwm = PWM_MAX_VAL - current_speed_pwm;
+    __HAL_TIM_SET_COMPARE(MOTOR_TIM_HANDLE, MOTOR_TIM_CHANNEL_V, comp_pwm);
 }
 
+/* --- Shell Commands --- */
 
-// Shell Command Implementations
-static int shell_cmd_run(h_shell_t* shell, int argc, char** argv)
+int cmd_motor_start(h_shell_t* h_shell, int argc, char** argv)
 {
-	motor_start_pwm();
-	int len = snprintf(shell->print_buffer, SHELL_PRINT_BUFFER_SIZE, "[Motor] ON\r\n");
-	shell->drv.transmit(shell->print_buffer, len);
-	return 0;
+    motor_start_pwm();
+    int size = snprintf(h_shell->print_buffer, SHELL_PRINT_BUFFER_SIZE, "Motor ON\r\n");
+    h_shell->drv.transmit(h_shell->print_buffer, size);
+    return 0;
 }
 
-static int shell_cmd_stop(h_shell_t* shell, int argc, char** argv)
+int cmd_motor_stop(h_shell_t* h_shell, int argc, char** argv)
 {
-	motor_stop_pwm();
-	int len = snprintf(shell->print_buffer, SHELL_PRINT_BUFFER_SIZE, "[Motor] OFF\r\n");
-	shell->drv.transmit(shell->print_buffer, len);
-	return 0;
+    motor_stop_pwm();
+    int size = snprintf(h_shell->print_buffer, SHELL_PRINT_BUFFER_SIZE, "Motor OFF\r\n");
+    h_shell->drv.transmit(h_shell->print_buffer, size);
+    return 0;
 }
 
-static int shell_cmd_set_speed(h_shell_t* shell, int argc, char** argv)
+int cmd_motor_speed(h_shell_t* h_shell, int argc, char** argv)
 {
-	if (argc < 2) {
-		int len = snprintf(shell->print_buffer, SHELL_PRINT_BUFFER_SIZE, "Usage: speed <number>\r\n");
-		shell->drv.transmit(shell->print_buffer, len);
-		return -1;
-	}
+    if (argc < 2)
+    {
+        int size = snprintf(h_shell->print_buffer, SHELL_PRINT_BUFFER_SIZE, "Usage: speed <value>\r\n");
+        h_shell->drv.transmit(h_shell->print_buffer, size);
+        return -1;
+    }
 
-	int parsed_speed = atoi(argv[1]);
-	motor_set_PWM(parsed_speed);
+    int speed_val = atoi(argv[1]);
+    motor_set_PWM(speed_val);
 
-	int len = snprintf(shell->print_buffer, SHELL_PRINT_BUFFER_SIZE, "Speed updated to %d\r\n", parsed_speed);
-	shell->drv.transmit(shell->print_buffer, len);
-	return 0;
+    int size = snprintf(h_shell->print_buffer, SHELL_PRINT_BUFFER_SIZE, "Target speed set to %d\r\n", speed_val);
+    h_shell->drv.transmit(h_shell->print_buffer, size);
+    return 0;
 }

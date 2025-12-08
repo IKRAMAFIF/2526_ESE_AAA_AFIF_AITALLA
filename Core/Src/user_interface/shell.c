@@ -98,7 +98,7 @@ void shell_init(h_shell_t* h_shell)
 
 	h_shell->func_list_size = 0;
 
-	size = snprintf(h_shell->print_buffer, SHELL_PRINT_BUFFER_SIZE, "\r\n=> Monsieur Shell v0.2.2 without FreeRTOS <=\r\n");
+	size = snprintf(h_shell->print_buffer, SHELL_PRINT_BUFFER_SIZE, "\r\n=> Shell v0.2.2  <=\r\n");
 	h_shell->drv.transmit(h_shell->print_buffer, size);
 	h_shell->drv.transmit(PROMPT, sizeof(PROMPT));
 

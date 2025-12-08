@@ -6,6 +6,9 @@
  */
 
 #include "app.h"
+#include "user_interface/led.h"
+
+
 
 #include "user_interface/shell.h"
 #include "motor_control/motor.h"
