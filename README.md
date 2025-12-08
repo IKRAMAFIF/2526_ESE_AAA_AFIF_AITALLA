@@ -9,10 +9,17 @@ Les travaux à réaliser sont les suivants :
 
 ## 2. Génération des PWM complémentaires (Commande MCC basique)
 
-L’objectif est d’obtenir quatre signaux PWM :
-- deux principaux (U, V)
-- deux complémentaires (U’, V’)
-- tous décalés avec un dead-time pour éviter le shoot-through
+Objectifs :
+
+Générer quatre signaux PWM complémentaires décalés pour piloter le moteur en boucle ouverte, conformément au cahier des charges.
+
+Intégrer un temps mort (dead-time) afin de garantir la sécurité du hacheur.
+
+Vérifier la qualité des signaux de commande à l’oscilloscope.
+
+Prendre en main le fonctionnement du hacheur de puissance.
+
+Réaliser un premier essai de commande moteur.
 
 ### 2.1. Paramétrage de TIM1
 
@@ -21,8 +28,7 @@ L’objectif est d’obtenir quatre signaux PWM :
 
 ### 2.2 Calcul du Dead-Time
 
-Horloge timer : 170 MHz  
-→ période : 5.88 ns
+Horloge timer : 170 MHz  → période : 5.88 ns
 
 Dead-time souhaité : 200 ns
 Alors: `DTG = 200ns / 5.88ns ≈ 34`
