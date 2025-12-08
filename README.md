@@ -9,18 +9,6 @@ Les travaux à réaliser sont les suivants :
 
 ## 2. Génération des PWM complémentaires (Commande MCC basique)
 
-Objectifs :
-
-Générer quatre signaux PWM complémentaires décalés pour piloter le moteur en boucle ouverte, conformément au cahier des charges.
-
-Intégrer un temps mort (dead-time) afin de garantir la sécurité du hacheur.
-
-Vérifier la qualité des signaux de commande à l’oscilloscope.
-
-Prendre en main le fonctionnement du hacheur de puissance.
-
-Réaliser un premier essai de commande moteur.
-
 ### 2.1. Paramétrage de TIM1
 
 ![Config1](assets/Config1.jpg)
