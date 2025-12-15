@@ -93,6 +93,60 @@ Ce comportement met en évidence un **risque potentiel d’endommagement** :
 
 Cette observation justifie la mise en place, dans la suite du TP, d’une **rampe progressive du rapport cyclique** afin de limiter l’appel de courant.
 
+## 7. Mesure du courant moteur
+
+### 7.1 Choix des courants à mesurer
+
+Dans le cas d’une machine à courant continu (MCC) pilotée par un pont en H,  
+le courant le plus pertinent à mesurer est le **courant moteur**, car il est directement lié au couple électromagnétique et permet d’assurer la protection du système.
+
+Dans notre montage :
+- la MCC est connectée entre les phases **U** et **V**,
+- la mesure du **courant de phase** est suffisante pour analyser le comportement du moteur et surveiller son fonctionnement.
+
+En complément, le **courant du bus d’alimentation (Ibus)** peut également être mesuré afin d’assurer une supervision globale de la puissance consommée et de détecter d’éventuelles surcharges.
+
+---
+
+### 7.2 Capteur de courant et fonction de transfert
+
+Les capteurs de courant utilisés délivrent une tension analogique proportionnelle au courant mesuré, centrée autour d’une tension d’offset.
+
+D’après la datasheet du capteur :
+
+- **Tension d’offset** :  
+  \[
+  V_{offset} = 1.65\ \text{V}
+  \]
+
+- **Sensibilité** :  
+  \[
+  S = 50\ \text{mV/A}
+  \]
+
+La relation entre la tension de sortie du capteur et le courant mesuré est donnée par :
+\[
+I_{mesuré} = \frac{V_{out} - V_{offset}}{S}
+\]
+
+---
+
+### 7.3 Conversion ADC
+
+La tension de sortie du capteur est numérisée par l’ADC du STM32 configuré en **résolution 12 bits**.
+
+La conversion tension–numérique est donnée par :
+\[
+V_{out} = \frac{\text{ADC}_{value}}{4096} \times 3.3
+\]
+
+En combinant cette expression avec la fonction de transfert du capteur, on obtient l’expression finale du courant mesuré :
+\[
+I = \frac{\left( \frac{\text{ADC}_{value}}{4096} \times 3.3 \right) - 1.65}{0.05}
+\]
+
+Cette relation est utilisée dans le code pour calculer le courant moteur à partir de la valeur brute fournie par l’ADC.
+
 
 
 
