@@ -81,7 +81,7 @@ Les signaux PWM ont été observés à l’oscilloscope pour chaque consigne :
 
 Un test supplémentaire a été réalisé avec un **rapport cyclique de 70 %**, appliqué directement après une consigne plus faible.
 
-![Test PWM 70%](Images/test_pwm_70.png)
+![Test PWM 70%](assets/test_pwm_70.png)
 
 Lors du passage direct de **50 % à 70 % de rapport cyclique**, une **montée brusque du régime moteur** est observée.  
 Cette variation rapide s’accompagne d’une augmentation significative du courant, visible sur les mesures à l’oscilloscope.
