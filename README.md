@@ -106,46 +106,47 @@ Dans notre montage :
 
 En complément, le **courant du bus d’alimentation (Ibus)** peut également être mesuré afin d’assurer une supervision globale de la puissance consommée et de détecter d’éventuelles surcharges.
 
----
+
 
 ### 7.2 Capteur de courant et fonction de transfert
 
-Les capteurs de courant utilisés délivrent une tension analogique proportionnelle au courant mesuré, centrée autour d’une tension d’offset.
+Les capteurs de courant utilisés délivrent une tension analogique proportionnelle
+au courant mesuré, centrée autour d’une tension d’offset.
 
 D’après la datasheet du capteur :
 
-- **Tension d’offset** :  
-  \[
-  V_{offset} = 1.65\ \text{V}
-  \]
+- **Tension d’offset** : V_offset = 1.65 V
 
-- **Sensibilité** :  
-  \[
-  S = 50\ \text{mV/A}
-  \]
+- **Sensibilité** : S = 50 mV/A
 
-La relation entre la tension de sortie du capteur et le courant mesuré est donnée par :
-\[
-I_{mesuré} = \frac{V_{out} - V_{offset}}{S}
-\]
+La relation entre la tension de sortie du capteur et le courant mesuré est :
 
----
+I_mesuré = (V_out − V_offset) / S
 
-### 7.3 Conversion ADC
 
-La tension de sortie du capteur est numérisée par l’ADC du STM32 configuré en **résolution 12 bits**.
+### 7.3 Première mesure du courant avec l’ADC (Polling)
+#### 7.3.1 Configuration de l’ADC
 
-La conversion tension–numérique est donnée par :
-\[
-V_{out} = \frac{\text{ADC}_{value}}{4096} \times 3.3
-\]
+Pour une première validation de la chaîne de mesure, l’ADC du STM32 est utilisé en mode Polling, sans DMA.
 
-En combinant cette expression avec la fonction de transfert du capteur, on obtient l’expression finale du courant mesuré :
-\[
-I = \frac{\left( \frac{\text{ADC}_{value}}{4096} \times 3.3 \right) - 1.65}{0.05}
-\]
+La configuration retenue est la suivante :
 
-Cette relation est utilisée dans le code pour calculer le courant moteur à partir de la valeur brute fournie par l’ADC.
+![ConfigADC](assets/ConfigADC.jpeg)
+
+### 7.3.2 Principe de mesure en Polling
+
+Le principe de mesure est le suivant :
+
+1. Démarrer l’ADC.
+2. Attendre la fin de conversion (`HAL_ADC_PollForConversion`).
+3. Lire la valeur brute de l’ADC.
+4. Convertir cette valeur en courant à l’aide de la fonction de transfert.
+
+Calcul du courant à l’aide de la fonction de transfert du capteur, la formule utilisée dans le code est :
+
+I = ((ADC_value / 4096) × 3.3 − 1.65) / 0.05
+
+
 
 
 
