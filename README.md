@@ -60,7 +60,7 @@ Des essais ont été réalisés pour plusieurs valeurs de vitesse :
 ![Teraspeed](assets/Teraspeed.jpg)
 
 
-4.3 Observation à l’oscilloscope
+### 4.3 Observation à l’oscilloscope
 
 Les signaux PWM ont été observés à l’oscilloscope pour chaque consigne :
 
@@ -77,7 +77,21 @@ Les signaux PWM ont été observés à l’oscilloscope pour chaque consigne :
 ![speed70](assets/speed70.png)
 
 
+### 4.4 Test à fort rapport cyclique (70 %)
 
+Un test supplémentaire a été réalisé avec un **rapport cyclique de 70 %**, appliqué directement après une consigne plus faible.
+
+![Test PWM 75%](Images/test_pwm_75.png)
+
+Lors du passage direct de **50 % à 70 % de rapport cyclique**, une **montée brusque du régime moteur** est observée.  
+Cette variation rapide s’accompagne d’une augmentation significative du courant, visible sur les mesures à l’oscilloscope.
+
+Ce comportement met en évidence un **risque potentiel d’endommagement** :
+- du moteur,
+- de l’électronique de puissance,
+- et de la chaîne d’acquisition.
+
+Cette observation justifie la mise en place, dans la suite du TP, d’une **rampe progressive du rapport cyclique** afin de limiter l’appel de courant.
 
 
 
