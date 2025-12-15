@@ -27,8 +27,11 @@ Alors pour la configuration : Dead Time : 34
 ![Config2](assets/Config2.jpg)
 
 Affichage sur oscilloscope: 
+Générer quatre PWM sur les bras de pont U et V pour controler le hacheur à partir du timer déjà attribué sur ces pins.
 
-![Oscillo1](assets/Oscillo1.jpg)
+Pour les tests, on a fixé le rapport cyclique à 60% 
+
+![Oscillo2](assets/Oscillo2.jpg)
 
 ## 3. Interface Shell UART
 
@@ -91,6 +94,7 @@ Ce comportement met en évidence un risque potentiel d’endommagement :
 
 Cette observation justifie la mise en place, dans la suite du TP, d’une rampe progressive du rapport cyclique afin de limiter l’appel de courant.
 
+
 ## 7. Mesure du courant moteur
 
 ### 7.1 Choix des courants à mesurer
@@ -141,6 +145,18 @@ Le principe de mesure est le suivant :
 Calcul du courant à l’aide de la fonction de transfert du capteur, la formule utilisée dans le code est :
 
 - I = ((ADC_value / 4096) × 3.3 − 1.65) / 0.05
+
+- **Affichage sur le terminal** :
+  
+![tera1](assets/tera1.jpg)
+
+
+
+
+
+
+
+  
 
 
 
