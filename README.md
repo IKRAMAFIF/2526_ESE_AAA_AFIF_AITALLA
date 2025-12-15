@@ -148,7 +148,7 @@ Calcul du courant à l’aide de la fonction de transfert du capteur, la formule
 
 - **Affichage sur le terminal** :
   
-![tera1](assets/tera1.jpg)
+![tera2](assets/tera2.png)
 
 
 
