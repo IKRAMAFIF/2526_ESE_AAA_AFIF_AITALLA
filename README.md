@@ -31,7 +31,7 @@ Générer quatre PWM sur les bras de pont U et V pour controler le hacheur à pa
 
 Pour les tests, on a fixé le rapport cyclique à 60% 
 
-![Oscillo2](assets/Oscillo2.jpg)
+![Oscillo3](assets/Oscillo3.png)
 
 ## 3. Interface Shell UART
 
