@@ -1,0 +1,2 @@
+../Core/Src/acquisition/input_analog.c:15:17:Read_ADC	1
+../Core/Src/acquisition/input_analog.c:27:7:CurrentSensor_Read	1

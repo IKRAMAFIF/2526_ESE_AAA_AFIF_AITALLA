@@ -22,12 +22,10 @@
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
-
+#include "acquisition/input_analog.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "app.h"
-#include "motor_control/motor.h" // Include motor header for ramp task
-
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -48,7 +46,6 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-static uint32_t ramp_timer_counter = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -99,31 +96,30 @@ int main(void)
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
 	init_device();
-	motor_init();
 
-	motor_start_pwm();
-	motor_set_PWM(60);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-	while(1)
+	while (1)
 	{
-	    loop();
 
-	    if (HAL_GetTick() - ramp_timer_counter >= RAMP_UPDATE_PERIOD_MS)
-	    {
-	        ramp_timer_counter = HAL_GetTick();
-	        motor_ramp_task();
-	    }
-	}
 
+
+
+
+
+
+
+
+		loop();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
 	}
   /* USER CODE END 3 */
-
+}
 
 /**
   * @brief System Clock Configuration
@@ -189,7 +185,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   /* USER CODE END Callback 0 */
   if (htim->Instance == TIM6)
   {
+
     HAL_IncTick();
+    QEI_Calculate_Speed();
   }
   /* USER CODE BEGIN Callback 1 */
 

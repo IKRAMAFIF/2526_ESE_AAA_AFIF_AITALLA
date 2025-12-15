@@ -8,48 +8,30 @@
 #ifndef INC_MOTOR_CONTROL_MOTOR_H_
 #define INC_MOTOR_CONTROL_MOTOR_H_
 
-#include "stm32g4xx_hal.h"
-#include "tim.h"
-#include "user_interface/shell.h"
 
-#define MOTOR_TIM_HANDLE &htim1
-#define MOTOR_TIM_CHANNEL_U TIM_CHANNEL_1
-#define MOTOR_TIM_CHANNEL_V TIM_CHANNEL_2
+#include "main.h"
 
-#define PWM_MAX_VAL 8500 // ARR + 1 (Period 8499)
-#define PWM_MIN_VAL 0
-
-// Ramp parameters
-#define RAMP_STEP_INCREMENT 50       // How much to change current_speed_pwm each ramp update
-#define RAMP_UPDATE_PERIOD_MS 10     // How often to update the ramp (in ms)
+// Fonctions de contrôle du Moteur DC
+// Commande complémentaire décalée (Bipolaire) sur TIM1 CH1(U) et CH2(V)
 
 /**
- * @brief Initializes the motor control module (PWM start, shell commands).
+ * @brief Démarre les canaux PWM et PWM_N (Complémentaires)
  */
-void motor_init(void);
+void Motor_Start(void);
 
 /**
- * @brief Sets the PWM duty cycle for the motor.
- * @param value Duty cycle value (0 to PWM_MAX_VAL).
- *              Typically, PWM_MAX_VAL/2 = Speed 0.
- *              This function now sets the target speed for the ramp.
+ * @brief Arrête les canaux PWM (Moteur en roue libre ou arrêt)
  */
-void motor_set_PWM(int value);
+void Motor_Stop(void);
 
 /**
- * @brief Starts the PWM generation on U and V channels.
+ * @brief Définit la vitesse et le sens du moteur selon le paramètre Alpha.
+ * @param alpha : Rapport cyclique de commande (float entre 0.0 et 1.0)
+ * - alpha = 0.5 : Arrêt (Vitesse nulle, 0V moyen)
+ * - alpha > 0.5 : Sens Avant (jusqu'à 1.0 pour Vitesse Max)
+ * - alpha < 0.5 : Sens Arrière (jusqu'à 0.0 pour Vitesse Max)
  */
-void motor_start_pwm(void);
+void Motor_SetSpeed(float alpha);
 
-/**
- * @brief Stops the PWM generation on U and V channels.
- */
-void motor_stop_pwm(void);
-
-/**
- * @brief Task to update the motor speed progressively (ramp).
- *        Should be called periodically (e.g., from a timer interrupt).
- */
-void motor_ramp_task(void);
 
 #endif /* INC_MOTOR_CONTROL_MOTOR_H_ */

@@ -1,0 +1,4 @@
+../Core/Src/acquisition/input_encoder.c:14:6:QEI_Start	1
+../Core/Src/acquisition/input_encoder.c:21:9:QEI_Get_Count	1
+../Core/Src/acquisition/input_encoder.c:28:6:QEI_Reset_Count	1
+../Core/Src/acquisition/input_encoder.c:34:6:QEI_Calculate_Speed	1
