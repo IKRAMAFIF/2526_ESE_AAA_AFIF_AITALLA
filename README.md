@@ -26,6 +26,10 @@ Alors pour la configuration : Dead Time : 34
 
 ![Config2](assets/Config2.jpg)
 
+Affichage sur oscilloscope: 
+
+![Oscillo1](assets/Oscillo1.jpg)
+
 ## 3. Interface Shell UART
 
 Une interface shell est mise en place via l’UART, permettant de commander le moteur en temps réel sans modifier le code.
@@ -34,7 +38,6 @@ La commande help permet d’afficher les commandes disponibles :
 ![Tera_help](assets/Tera_help.png)
 
 
-![Oscillo1](assets/Oscillo1.jpg)
 
 ## 4. Commande de vitesse du moteur
 ### 4.1 Principe
@@ -54,21 +57,24 @@ Des essais ont été réalisés pour plusieurs valeurs de vitesse :
 
 À chaque changement de consigne, la nouvelle valeur est correctement interprétée par le shell et appliquée au moteur.
 
+![Teraspeed](assets/Teraspeed.jpg)
+
+
 4.3 Observation à l’oscilloscope
 
 Les signaux PWM ont été observés à l’oscilloscope pour chaque consigne :
 
 À 50 %, le fonctionnement est stable.
 
+![speed50](assets/speed50.jpg)
+
 À 60 %, la variation du rapport cyclique est clairement visible.
+
+![speed60](assets/speed60.png)
 
 À 70 %, une montée plus brusque est observée, illustrant l’augmentation de l’énergie fournie au moteur.
 
-📸 Capture oscilloscope – PWM à 50 %
-
-📸 Capture oscilloscope – PWM à 60 %
-📸 Capture oscilloscope – PWM à 70 %
-
+![speed70](assets/speed70.png)
 
 
 
