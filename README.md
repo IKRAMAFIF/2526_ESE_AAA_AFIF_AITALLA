@@ -79,34 +79,30 @@ Les signaux PWM ont été observés à l’oscilloscope pour chaque consigne :
 
 ### 4.4 Test à fort rapport cyclique (70 %)
 
-Un test supplémentaire a été réalisé avec un **rapport cyclique de 70 %**, appliqué directement après une consigne plus faible.
+Un test supplémentaire a été réalisé avec un rapport cyclique de 70 %, appliqué directement après une consigne plus faible.
 
 ![Test PWM 70%](assets/test_pwm_70.png)
 
-Lors du passage direct de **50 % à 70 % de rapport cyclique**, une **montée brusque du régime moteur** est observée.  
+Lors du passage direct de 50 % à 70 % de rapport cyclique, une montée brusque du régime moteur est observée.  
 Cette variation rapide s’accompagne d’une augmentation significative du courant, visible sur les mesures à l’oscilloscope.
 
-Ce comportement met en évidence un **risque potentiel d’endommagement** :
-- du moteur,
-- de l’électronique de puissance,
-- et de la chaîne d’acquisition.
+Ce comportement met en évidence un risque potentiel d’endommagement :
+- du moteur, de l’électronique de puissance, et de la chaîne d’acquisition.
 
-Cette observation justifie la mise en place, dans la suite du TP, d’une **rampe progressive du rapport cyclique** afin de limiter l’appel de courant.
+Cette observation justifie la mise en place, dans la suite du TP, d’une rampe progressive du rapport cyclique afin de limiter l’appel de courant.
 
 ## 7. Mesure du courant moteur
 
 ### 7.1 Choix des courants à mesurer
 
 Dans le cas d’une machine à courant continu (MCC) pilotée par un pont en H,  
-le courant le plus pertinent à mesurer est le **courant moteur**, car il est directement lié au couple électromagnétique et permet d’assurer la protection du système.
+le courant le plus pertinent à mesurer est le courant moteur, car il est directement lié au couple électromagnétique et permet d’assurer la protection du système.
 
 Dans notre montage :
-- la MCC est connectée entre les phases **U** et **V**,
-- la mesure du **courant de phase** est suffisante pour analyser le comportement du moteur et surveiller son fonctionnement.
+- la MCC est connectée entre les phases U et V,
+- la mesure du courant de phase est suffisante pour analyser le comportement du moteur et surveiller son fonctionnement.
 
-En complément, le **courant du bus d’alimentation (Ibus)** peut également être mesuré afin d’assurer une supervision globale de la puissance consommée et de détecter d’éventuelles surcharges.
-
-
+En complément, le courant du bus d’alimentation (Ibus) peut également être mesuré afin d’assurer une supervision globale de la puissance consommée et de détecter d’éventuelles surcharges.
 
 ### 7.2 Capteur de courant et fonction de transfert
 
@@ -144,7 +140,9 @@ Le principe de mesure est le suivant :
 
 Calcul du courant à l’aide de la fonction de transfert du capteur, la formule utilisée dans le code est :
 
-I = ((ADC_value / 4096) × 3.3 − 1.65) / 0.05
+- I = ((ADC_value / 4096) × 3.3 − 1.65) / 0.05
+
+
 
 
 
